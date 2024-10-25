@@ -12,8 +12,10 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ReservationSubmitButton } from '@/components/submit-button';
+import { unstable_noStore as noStore } from 'next/dist/server/web/spec-extension/unstable-no-store';
 
 async function getData(homeId: string) {
+  noStore();
   const data = await prisma.home.findUnique({
     where: {
       id: homeId,
@@ -48,6 +50,7 @@ async function getData(homeId: string) {
 
 const Page = async ({ params }: { params: { id: string } }) => {
   const data = await getData(params.id);
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const { getCountryByValue } = useCountries();
   const country = getCountryByValue(data?.country as string);
   const { getUser } = getKindeServerSession();
@@ -80,13 +83,15 @@ const Page = async ({ params }: { params: { id: string } }) => {
           </div>
 
           <div className='mt-6 flex items-center'>
-            <img
+            <Image
               src={
                 data?.User?.profileImage ??
                 'https://preview.redd.it/describe-this-photo-of-anya-in-a-single-word-v0-ry926ofw37jc1.jpeg?auto=webp&s=1edba0b0538d3d910f1adf026ec22277ffe1a348'
               }
               alt='User profile'
-              className='h-11 w-11 rounded-full'
+              className='rounded-full'
+              width={44}
+              height={44}
             />
             <div className='ml-4 flex flex-col'>
               <h3 className='font-medium'>Hosted by {data?.User?.firstName}</h3>
